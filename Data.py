@@ -1,28 +1,17 @@
-
+from Sentence import Sentence
 
 class Data:
 
-    def loadTrainningData(self, filename):
-        labels = set()
-        tags = []
-        sentences = []
-        words = dict()
+    def sentencesFromFile(self, filename):
 
         fh = open(filename, 'r')
-        for line in fh.readlines():
-            sentenceSplitted = line.split(' ')
-            for wordFromSentence in sentenceSplitted:
-                word, label = wordFromSentence.split('_')
-                labels.add(str(label).replace('\n', ''))
-                if word in words:
-                    probabilitiesDict = words[word]
-                    if label in probabilitiesDict:
-                        probabilitiesDict[label] += 1
-                    else:
-                        probabilitiesDict[label] = 1
-                else:
-                    words[word] = {label : 1}
+
+        sentences = [Sentence]
+
+        sentences = list(map(lambda sentence : Sentence(sentence), fh.readlines()))
+
+        print(sentences[1].labels)
 
         fh.close()
 
-        return words
+        return sentences

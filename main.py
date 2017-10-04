@@ -1,5 +1,6 @@
 from Greedy import Greedy
 from CRF import CRF
+from Data import Data
 from Features import FeatureFunction
 from Enums import Label
 
@@ -9,6 +10,9 @@ from Enums import Label
 
 
 crf = CRF()
+
+data = Data()
+
 crf.loadData('Data/macmorpho-train.txt')
 
 print(crf.predict('Eu correr rapidamente'))
