@@ -36,8 +36,14 @@ class Features:
     @classmethod
 
     def verify(cls, feature : FeatureFunction, current : Label, previous : Label):
-        return 1 if feature.previous_label == previous and feature.label == current else 0
 
+        if feature.previous_label == previous:
+            if feature.label == current:
+                return 1
+            else:
+                return 0
+        else:
+            return 0
 
     @classmethod
     def featuresFromSentences(self, sentences : [Sentence]):
@@ -49,8 +55,8 @@ class Features:
 
             for i in range(1, len(sentence.labels)):
 
-                label = sentence.labels[i]
-                previousLabel = sentence.labels[i-1]
+                label = Label[sentence.labels[i]]
+                previousLabel = Label[sentence.labels[i-1]]
 
                 feature = FeatureFunction(previousLabel, label)
                 features.add(feature)

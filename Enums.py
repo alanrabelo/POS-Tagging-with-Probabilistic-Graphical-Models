@@ -27,3 +27,4 @@ class Label(Enum):
     PREP__PRO_KS = 'PREP+PRO-KS',
     PREP__PROADJ = 'PREP+PROADJ',
     KC ='KC'
+

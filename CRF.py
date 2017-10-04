@@ -29,6 +29,7 @@ class CRF:
 
     def generateFeatures(self):
         self.featuresFunctions = Features.featuresFromSentences(self.sentences)
+        self.weigths = np.random.uniform(low=0.0, high=1.0, size=(len(self.featuresFunctions)))
 
     def train(self):
         print('not trainning yet, we have random weigths')
@@ -36,7 +37,7 @@ class CRF:
 
     def predict(self, sentence : str):
 
-        best = self.wordToFeatures(sentence, numberOfArranges=1)
+        best = self.wordToFeatures(sentence, numberOfArranges=5)
         print('best combination based on features ' + str(best))
         self.weigths = [(random.randint(0, 1000)) / 1000 for _ in range(6)]
         return 'In Construction'
@@ -54,18 +55,17 @@ class CRF:
         for arrange in arrangesOfLabels:
             sumOfFeatures = 0
 
-            for feature in self.featuresFunctions:
+            for (index, feature) in enumerate(self.featuresFunctions):
                 for position in range(1, len(splittedSentence)):
                     current = arrange[position]
                     previous = arrange[position-1]
-                    sumOfFeatures += Features.verify(feature, current, previous)
-
+                    response = Features.verify(feature, current, previous)
+                    sumOfFeatures += self.weigths[index] * response
             probabilityOfArrange.append(sumOfFeatures)
 
         bestIndices = np.argpartition(probabilityOfArrange, -numberOfArranges)[-numberOfArranges:]
         print(np.array(arrangesOfLabels)[bestIndices])
         print(np.array(probabilityOfArrange)[bestIndices])
-
 
         return(np.array(arrangesOfLabels)[bestIndices])
 
