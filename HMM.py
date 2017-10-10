@@ -108,7 +108,6 @@ class HMM:
 
             produtOfProbabilites = 1
             for index, word in enumerate(splittedSentence):
-
                 if word not in self.words:
                     continue
                 if arrange[index].value[0] not in self.words[word]:
@@ -120,7 +119,6 @@ class HMM:
 
                 probabilityOfWord = self.words[word][arrange[index].value[0]]
                 probabilityOfBigram = self.bigrams['EMPTY' if index == 0 else arrange[index-1].value[0]][arrange[index].value[0]]
-
                 produtOfProbabilites *= probabilityOfWord * probabilityOfBigram
 
                 # if index == 0:
@@ -134,17 +132,20 @@ class HMM:
             probabilityOfArrange.append(produtOfProbabilites)
 
 
-        print(possibleArranges)
+
+        max = 0
+        maxIndexes = []
 
         for index,probability in enumerate(probabilityOfArrange):
-            if probability == 1:
-                probabilityOfArrange[index] = 0
-        print(probabilityOfArrange)
+            if probability != 1:
+                if probabilityOfArrange[index] > max:
+                    max = probabilityOfArrange[index]
+                    maxIndex = [index]
+                elif probabilityOfArrange[index] == max:
+                    maxIndexes.append(index)
 
-        bestIndices = np.argpartition(probabilityOfArrange, -numberOfArranges)[-numberOfArranges:]
-        return (np.array(possibleArranges)[bestIndices])
 
-
+        return np.array(possibleArranges)[maxIndexes]
 
     def possibleArranges(self, count: int):
         # Gets all combinations of labels
