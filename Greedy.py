@@ -1,6 +1,4 @@
 
-import operator
-
 class Greedy:
 
     def __init__(self):
@@ -8,7 +6,6 @@ class Greedy:
         self.tags = []
         self.sentences = []
         self.words = dict()
-
 
     def loadTrainningData(self, filename):
         fh = open(filename, 'r')

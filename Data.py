@@ -10,8 +10,6 @@ class Data:
 
         sentences = list(map(lambda sentence : Sentence(sentence), fh.readlines()))
 
-        print(sentences[1].labels)
-
         fh.close()
 
         return sentences
