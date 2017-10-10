@@ -6,7 +6,7 @@ hmm = HMM()
 
 hmm.loadTrainningData('Data/macmorpho-train.txt')
 
-result = hmm.classify('Eu amo a Ruana', 5)
+result = hmm.classify('Meu computador está com defeito', 5)
 
 print(result)
 

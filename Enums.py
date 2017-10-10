@@ -32,7 +32,6 @@ class Label(Enum):
     # EMPTY = 'EMPTY',
     PCP = 'PCP',
     CUR = 'CUR',
-    NONE = 'NONE'
     PREP = 'PREP',
     # PREP__PROSUB = 'PREP+PROSUB',
     # PREP__ADV = 'PREP+ADV',
@@ -64,7 +63,10 @@ class Label(Enum):
     IN = 'IN',
 
     K = 'K'
+    # NONE = 'NONE'
+
     # KC ='KC',
     # KS = 'KS',
+
 
 

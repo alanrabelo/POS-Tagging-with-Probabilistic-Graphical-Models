@@ -104,8 +104,9 @@ class HMM:
         possibleArranges = self.possibleArranges(len(splittedSentence))
         probabilityOfArrange = []
 
-        for arrange in possibleArranges:
-
+        for index,arrange in enumerate(possibleArranges):
+            if index / len(possibleArranges) % 0.01 == 0:
+                print(index / len(possibleArranges))
             produtOfProbabilites = 1
             for index, word in enumerate(splittedSentence):
                 if word not in self.words or arrange[index].value[0] not in self.words[word]:
@@ -127,11 +128,9 @@ class HMM:
                 # else:
                 #     if word in self.words and arrange[index] in self.words[word] and arrange[index-1] in self.bigrams and arrange[index] in self.bigrams[arrange[index-1]]:
                 #         produtOfProbabilites *= self.words[arrange[index]] *
-
             #print(arrange)
             #print(produtOfProbabilites)
             probabilityOfArrange.append(produtOfProbabilites)
-
 
 
         max = 0
@@ -141,14 +140,10 @@ class HMM:
             if probability != 1:
                 if probabilityOfArrange[index] > max:
                     max = probabilityOfArrange[index]
-                    maxIndex = [index]
+                    maxIndexes = [index]
                 elif probabilityOfArrange[index] == max:
                     print(probabilityOfArrange[index])
                     maxIndexes.append(index)
-        print(self.words['jogar'])
-        print(self.words['bola'])
-        print(self.bigrams['EMPTY']['V'])
-        print(self.bigrams['V']['N'])
 
         return np.array(possibleArranges)[maxIndexes]
 
