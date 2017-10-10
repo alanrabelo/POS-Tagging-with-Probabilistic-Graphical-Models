@@ -108,17 +108,17 @@ class HMM:
 
             produtOfProbabilites = 1
             for index, word in enumerate(splittedSentence):
-                if word not in self.words:
-                    continue
-                if arrange[index].value[0] not in self.words[word]:
-                    continue
-                if arrange[index-1].value[0] not in self.bigrams:
-                    continue
-                if arrange[index].value[0] not in self.bigrams['EMPTY' if index == 0 else arrange[index-1].value[0]]:
-                    continue
+                if word not in self.words or arrange[index].value[0] not in self.words[word]:
+                    probabilityOfWord = 0.00000000001
+                else:
+                    probabilityOfWord = self.words[word][arrange[index].value[0]]
 
-                probabilityOfWord = self.words[word][arrange[index].value[0]]
-                probabilityOfBigram = self.bigrams['EMPTY' if index == 0 else arrange[index-1].value[0]][arrange[index].value[0]]
+                if arrange[index-1].value[0] not in self.bigrams or arrange[index].value[0] not in self.bigrams['EMPTY' if index == 0 else arrange[index-1].value[0]]:
+                    probabilityOfBigram = 0.00000000001
+                else:
+                    probabilityOfBigram = self.bigrams['EMPTY' if index == 0 else arrange[index - 1].value[0]][
+                        arrange[index].value[0]]
+
                 produtOfProbabilites *= probabilityOfWord * probabilityOfBigram
 
                 # if index == 0:
@@ -128,7 +128,8 @@ class HMM:
                 #     if word in self.words and arrange[index] in self.words[word] and arrange[index-1] in self.bigrams and arrange[index] in self.bigrams[arrange[index-1]]:
                 #         produtOfProbabilites *= self.words[arrange[index]] *
 
-
+            #print(arrange)
+            #print(produtOfProbabilites)
             probabilityOfArrange.append(produtOfProbabilites)
 
 
@@ -142,8 +143,12 @@ class HMM:
                     max = probabilityOfArrange[index]
                     maxIndex = [index]
                 elif probabilityOfArrange[index] == max:
+                    print(probabilityOfArrange[index])
                     maxIndexes.append(index)
-
+        print(self.words['jogar'])
+        print(self.words['bola'])
+        print(self.bigrams['EMPTY']['V'])
+        print(self.bigrams['V']['N'])
 
         return np.array(possibleArranges)[maxIndexes]
 
