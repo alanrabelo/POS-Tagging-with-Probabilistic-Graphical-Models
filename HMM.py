@@ -14,6 +14,7 @@ class HMM:
         self.words = dict()
         self.bigrams = dict()
         self.bigramsProbabilities = dict()
+        self.total = 0
 
     def loadTrainningData(self, filename):
 
@@ -24,6 +25,7 @@ class HMM:
             for index, wordFromSentence in enumerate(sentenceSplitted):
                 word, label = wordFromSentence.split('_')
 
+                word = str(word).lower()
 
                 if index == 0:
                     previousLabel = 'EMPTY'
@@ -36,7 +38,9 @@ class HMM:
                     label = 'PRO'
                 if label.startswith('K'):
                     label = 'K'
-                if label.startswith('N'):
+                if label.startswith('NUM'):
+                    label = 'NUM'
+                elif label.startswith('N'):
                     label = 'N'
                 if label.startswith('ADV'):
                     label = 'ADV'
@@ -47,22 +51,34 @@ class HMM:
                     previousLabel = 'PRO'
                 if previousLabel.startswith('K'):
                     previousLabel = 'K'
-                if previousLabel.startswith('N'):
+                if previousLabel.startswith('NUM'):
+                    previousLabel = 'NUM'
+                elif previousLabel.startswith('N'):
                     previousLabel = 'N'
                 if previousLabel.startswith('ADV'):
                     previousLabel = 'ADV'
 
 
                 self.labels.add(str(label))
-                if word in self.words:
-                    probabilitiesDict = self.words[word]
-                    if label in probabilitiesDict:
-                        probabilitiesDict[label] += 1
+                if label in self.words:
+                    probabilitiesDict = self.words[label]
+                    if word in probabilitiesDict:
+                        probabilitiesDict[word] += 1
                     else:
-                        probabilitiesDict[label] = 1
-                    self.words[word]['total'] += 1
+                        probabilitiesDict[word] = 1
+                    self.words[label]['TOTALABEL'] += 1
                 else:
-                    self.words[word] = {label : 1, 'total' : 1}
+                    self.words[label] = {word : 1, 'TOTALABEL' : 1}
+
+                # if word in self.words:
+                #     probabilitiesDict = self.words[word]
+                #     if label in probabilitiesDict:
+                #         probabilitiesDict[label] += 1
+                #     else:
+                #         probabilitiesDict[label] = 1
+                #     self.words[word]['total'] += 1
+                # else:
+                #     self.words[word] = {label : 1, 'total' : 1}
 
                 if previousLabel in self.bigrams :
                     if label in self.bigrams[previousLabel]:
@@ -85,16 +101,15 @@ class HMM:
             for current in self.bigrams[previous]:
                 self.bigrams[previous][current] /= totalForPrevious
 
-        for word in self.words.keys():
+        for label in self.words.keys():
+            totalForPrevious = self.words[label]['TOTALABEL']
 
-            totalForPrevious = self.words[word]['total']
+            print(self.words[label]['TOTALABEL'])
 
-            del self.words[word]['total']
+            #del self.words[label]['total']
 
-            for label in self.words[word]:
-                self.words[word][label] /= totalForPrevious
-
-        print(self.words)
+            for word in self.words[label]:
+                self.words[label][word] /= totalForPrevious
 
 
 
@@ -109,13 +124,13 @@ class HMM:
                 print(index / len(possibleArranges))
             produtOfProbabilites = 1
             for index, word in enumerate(splittedSentence):
-                if word not in self.words or arrange[index].value[0] not in self.words[word]:
-                    probabilityOfWord = 0.00000000001
+                if word not in self.words[arrange[index].value[0]]:
+                    probabilityOfWord = 0.000000000000001
                 else:
-                    probabilityOfWord = self.words[word][arrange[index].value[0]]
+                    probabilityOfWord = self.words[arrange[index].value[0]][word]
 
                 if arrange[index-1].value[0] not in self.bigrams or arrange[index].value[0] not in self.bigrams['EMPTY' if index == 0 else arrange[index-1].value[0]]:
-                    probabilityOfBigram = 0.00000000001
+                    probabilityOfBigram = 0.000000000000001
                 else:
                     probabilityOfBigram = self.bigrams['EMPTY' if index == 0 else arrange[index - 1].value[0]][
                         arrange[index].value[0]]
@@ -136,8 +151,14 @@ class HMM:
         max = 0
         maxIndexes = []
 
+        print(probabilityOfArrange)
+        # print(self.words['V']['vou'])
+        # print(self.words['ADV']['ali'])
+        # print(self.bigrams['V']['ADV'])
+        # print(self.bigrams['EMPTY']['V'])
         for index,probability in enumerate(probabilityOfArrange):
             if probability != 1:
+                #print(probability)
                 if probabilityOfArrange[index] > max:
                     max = probabilityOfArrange[index]
                     maxIndexes = [index]
@@ -145,6 +166,7 @@ class HMM:
                     print(probabilityOfArrange[index])
                     maxIndexes.append(index)
 
+        print(max)
         return np.array(possibleArranges)[maxIndexes]
 
     def possibleArranges(self, count: int):
