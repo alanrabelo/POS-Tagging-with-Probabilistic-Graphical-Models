@@ -115,7 +115,7 @@ class HMM:
 
     def classify(self, sentence, numberOfArranges : int):
 
-        splittedSentence = sentence.split(' ')
+        splittedSentence = sentence.replace('.', ' .').replace(',', ' ,').split(' ')
         possibleArranges = self.possibleArranges(len(splittedSentence))
         probabilityOfArrange = []
 
