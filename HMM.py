@@ -170,8 +170,8 @@ class HMM:
         return np.array(possibleArranges)[maxIndexes]
 
     def possibleArranges(self, count: int):
-        # Gets all combinations of labels
-        return list(itertools.permutations(self.possibleLabels, count))
+        # Gets all combinations of labels with repetition
+        return list([p for p in itertools.product(self.possibleLabels, repeat=count)])
 
     def generatePossibleLabels(self):
         self.possibleLabels = list(set(map(Label, Label)))
