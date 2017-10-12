@@ -115,7 +115,7 @@ class HMM:
 
     def classify(self, sentence, numberOfArranges : int):
 
-        splittedSentence = sentence.split(' ')
+        splittedSentence = str(sentence).lower().split(' ')
         possibleArranges = self.possibleArranges(len(splittedSentence))
         probabilityOfArrange = []
 
@@ -123,9 +123,10 @@ class HMM:
             if index / len(possibleArranges) % 0.01 == 0:
                 print(index / len(possibleArranges))
             produtOfProbabilites = 1
+            #arrange[0].value[0] == 'ART' and arrange[1].value[0] == 'N' and arrange[2].value[0] == 'V'
             for index, word in enumerate(splittedSentence):
                 if word not in self.words[arrange[index].value[0]]:
-                    probabilityOfWord = 0.000000000000001
+                    probabilityOfWord = 0
                 else:
                     probabilityOfWord = self.words[arrange[index].value[0]][word]
 
@@ -151,11 +152,15 @@ class HMM:
         max = 0
         maxIndexes = []
 
-        print(probabilityOfArrange)
-        # print(self.words['V']['vou'])
+        print(self.words['N']['computador'])
+        print(self.words['N']['defeito'])
+        print(self.words['PREP']['com'])
+        print(self.words['ART']['o'])
+        print(self.words['V']['está'])
+        #print(self.words['PRO']['defeito'])
         # print(self.words['ADV']['ali'])
         # print(self.bigrams['V']['ADV'])
-        # print(self.bigrams['EMPTY']['V'])
+        #print(self.bigrams['PREP']['N'])
         for index,probability in enumerate(probabilityOfArrange):
             if probability != 1:
                 #print(probability)
@@ -171,33 +176,7 @@ class HMM:
 
     def possibleArranges(self, count: int):
         # Gets all combinations of labels
-        return list(itertools.permutations(self.possibleLabels, count))
+        return list(itertools.product(self.possibleLabels, repeat= count))
 
     def generatePossibleLabels(self):
         self.possibleLabels = list(set(map(Label, Label)))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
