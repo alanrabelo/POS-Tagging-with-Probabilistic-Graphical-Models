@@ -117,39 +117,14 @@ class HMM:
 
     def classify(self, sentence, numberOfArranges : int):
 
-        # initial = 'EMPTY'
-        #
-        # possibles = [['EMPTY']] * numberOfArranges
-        #
-        # for index in range(0, numberOfArranges-1):
-        #
-        #
-        #     nexts = list(self.bigrams['EMPTY'].keys())
-        #
-        #     for possible in possibles:
-        #         possible.append()
-        #
-        #
-        #     #
-        #     # for value in nexts:
-        #     #     np.append(possibles, value)
-        #
-        # print( ' possible' + str(possibles))
-
-
-
-
-
-        print(self.bigrams)
-        print('Started Classification')
+        print('Started Classification Task')
 
         splittedSentence = sentence.replace('.', ' .').replace(',', ' ,').split(' ')
         possibleArranges = self.possibleArranges(len(splittedSentence))
         probabilityOfArrange = []
 
         viterbyDict = dict()
-        timesSaved = 0
-        totalTimes = 0
+
         for index,arrange in enumerate(possibleArranges):
             produtOfProbabilites = 1
             # print(str(index ) + '/' + str(len(possibleArranges)))
@@ -157,24 +132,21 @@ class HMM:
                 currentLabel = arrange[index].value[0]
                 previousLabel = 'EMPTY' if index == 0 else arrange[index-1].value[0]
 
-
                 # Verify dictionary for previous occurrencies
                 tupleForCurrentiteration = (previousLabel,currentLabel,word)
                 if tupleForCurrentiteration in viterbyDict:
-                    timesSaved += 1
                     produtOfProbabilites *= viterbyDict[tupleForCurrentiteration]
                     continue
-                totalTimes+=1
+
 
 
                 if word not in self.words[currentLabel]:
-                    probabilityOfWord = 0.001
+                    probabilityOfWord = 0.00000000000001
                 else:
                     probabilityOfWord = self.words[currentLabel][word]
 
                 if previousLabel not in self.bigrams or currentLabel not in self.bigrams['EMPTY' if index == 0 else arrange[index-1].value[0]]:
                     probabilityOfBigram = 0.000000000000001
-                    break
                 else:
                     probabilityOfBigram = self.bigrams['EMPTY' if index == 0 else previousLabel][currentLabel]
 
@@ -184,26 +156,10 @@ class HMM:
 
             probabilityOfArrange.append(produtOfProbabilites)
 
-
-        max = 0
-        maxIndexes = []
-
-        print('Entered ' + str(timesSaved) + ' times in viterbidict')
-        print('Calculeted ' + str(totalTimes) + ' times the probability')
-
         maxProbability = np.argmax(probabilityOfArrange)
+
         return possibleArranges[maxProbability]
 
-        # for index,probability in enumerate(probabilityOfArrange):
-        #     if probability != 1:
-        #         #print(probability)
-        #         if probabilityOfArrange[index] > max:
-        #             max = probabilityOfArrange[index]
-        #             maxIndexes = [index]
-        #         elif probabilityOfArrange[index] == max:
-        #             maxIndexes.append(index)
-        #
-        # return np.array(possibleArranges)[maxIndexes]
 
     def possibleArranges(self, count: int):
         # Gets all combinations of labels with repetition
