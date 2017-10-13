@@ -117,7 +117,7 @@ class HMM:
 
     def classify(self, sentence, numberOfArranges : int):
 
-        sentence = str(sentence).lower().replace('.', ' .').replace(',', ' ,').replace(',', ' ,').replace('.', ' .').replace('?', ' ?').replace('!', ' !')
+        sentence = str(sentence).lower().replace('.', ' .').replace(',', ' ,').replace('?', ' ?').replace('!', ' !')
 
         print('Started Classification Task')
 

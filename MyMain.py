@@ -1,6 +1,11 @@
 from HMM import HMM
 import time
 
+# Ainda que eu falasse a língua dos anjos e falasse a língua dos homens
+# Às vezes no silêncio da noite eu fico imaginando nós dois
+# Às vezes no silêncio da noite eu fico imaginando nós dois
+# O que sabemos é uma gota, o que ignoramos é um oceano.
+# Se eu vi mais longe, foi por estar sobre ombros de gigantes.
 
 
 hmm = HMM()
