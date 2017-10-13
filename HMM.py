@@ -117,6 +117,8 @@ class HMM:
 
     def classify(self, sentence, numberOfArranges : int):
 
+        sentence = str(sentence).lower()
+
         print('Started Classification Task')
 
 
@@ -143,13 +145,13 @@ class HMM:
 
 
         possibleArranges = self.possibleArrangesForArray(possibleLabelsBest)
+
         probabilityOfArrange = []
 
         viterbyDict = dict()
 
         for index,arrange in enumerate(possibleArranges):
             produtOfProbabilites = 1
-            # print(str(index ) + '/' + str(len(possibleArranges)))
             for index, word in enumerate(splittedSentence):
                 if index >= len(arrange):
                     continue
@@ -182,7 +184,6 @@ class HMM:
 
         return possibleArranges[maxProbability]
 
-
     def possibleArranges(self, count: int):
         # Gets all combinations of labels with repetition
         allPossible = list([p for p in itertools.product(self.possibleLabels, repeat=count)])
@@ -205,29 +206,5 @@ class HMM:
         for label in list(set(map(Label, Label))):
             labels.append(label.value[0])
         return labels
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

@@ -11,11 +11,22 @@ hmm.loadTrainningData('Data/macmorpho-train.txt')
 endLoading = time.time()
 print(str(endLoading - startLoading) + ' seconds to train' )
 
+while True:
+    string = input("Digite a frase a ser classificada:\n")
 
-start = time.time()
-result = hmm.classify('Eu vou ali correr muito porque estou com fome demais da conta amigo do meu irmão na rua lá de casa', 5)
-end = time.time()
+    if string == 'q':
+        break
 
-print(str(end - start) + ' seconds to classify' )
+    start = time.time()
+    result = hmm.classify(string, 1)
+    end = time.time()
 
-print(result)
+
+    phrase = string.split(' ')
+    print()
+    for i,word in enumerate(phrase):
+        label = result[i]
+        print(word + " -> " + label)
+
+    print()
+    print(str(end - start) + ' seconds to classify' )
