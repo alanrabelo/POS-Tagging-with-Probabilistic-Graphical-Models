@@ -119,7 +119,11 @@ class HMM:
 
         print('Started Classification Task')
 
+
+
         splittedSentence = sentence.replace('.', ' .').replace(',', ' ,').split(' ')
+        
+
         possibleArranges = self.possibleArranges(len(splittedSentence))
         probabilityOfArrange = []
 
