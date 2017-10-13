@@ -22,7 +22,7 @@ while True:
     end = time.time()
 
 
-    phrase = string.split(' ')
+    phrase = string.replace('.', ' .').replace(',', ' ,').replace('?', ' ?').replace('!', ' !').split(' ')
     print()
     for i,word in enumerate(phrase):
         label = result[i]
