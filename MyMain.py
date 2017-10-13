@@ -1,11 +1,21 @@
 from HMM import HMM
+import time
 
 
 
 hmm = HMM()
 
-hmm.loadTrainningData('Data/macmorpho-train.txt')
+startLoading = time.time()
 
-result = hmm.classify('Alegria de amar minha vida', 5)
+hmm.loadTrainningData('Data/macmorpho-train.txt')
+endLoading = time.time()
+print(str(endLoading - startLoading) + ' seconds to train' )
+
+
+start = time.time()
+result = hmm.classify('Oi amigo', 5)
+end = time.time()
+
+print(str(end - start) + ' seconds to classify' )
 
 print(result)

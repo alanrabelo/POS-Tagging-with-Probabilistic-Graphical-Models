@@ -13,6 +13,7 @@ class HMM:
         self.sentences = []
         self.words = dict()
         self.bigrams = dict()
+        self.bigramsSaw = set()
         self.bigramsProbabilities = dict()
         self.total = 0
 
@@ -31,6 +32,8 @@ class HMM:
                     previousLabel = 'EMPTY'
                 else:
                     previousLabel = sentenceSplitted[index-1].split('_')[1]
+
+                self.bigramsSaw.add((previousLabel, label))
 
                 if label.startswith('PREP'):
                     label = 'PREP'
@@ -98,13 +101,12 @@ class HMM:
 
             del self.bigrams[previous]['total']
 
+
             for current in self.bigrams[previous]:
                 self.bigrams[previous][current] /= totalForPrevious
 
         for label in self.words.keys():
             totalForPrevious = self.words[label]['TOTALABEL']
-
-            print(self.words[label]['TOTALABEL'])
 
             #del self.words[label]['total']
 
@@ -115,63 +117,99 @@ class HMM:
 
     def classify(self, sentence, numberOfArranges : int):
 
+        # initial = 'EMPTY'
+        #
+        # possibles = [['EMPTY']] * numberOfArranges
+        #
+        # for index in range(0, numberOfArranges-1):
+        #
+        #
+        #     nexts = list(self.bigrams['EMPTY'].keys())
+        #
+        #     for possible in possibles:
+        #         possible.append()
+        #
+        #
+        #     #
+        #     # for value in nexts:
+        #     #     np.append(possibles, value)
+        #
+        # print( ' possible' + str(possibles))
+
+
+
+
+
+        print(self.bigrams)
+        print('Started Classification')
+
         splittedSentence = sentence.replace('.', ' .').replace(',', ' ,').split(' ')
         possibleArranges = self.possibleArranges(len(splittedSentence))
         probabilityOfArrange = []
 
+        viterbyDict = dict()
+        timesSaved = 0
+        totalTimes = 0
         for index,arrange in enumerate(possibleArranges):
-            if index / len(possibleArranges) % 0.01 == 0:
-                print(index / len(possibleArranges))
             produtOfProbabilites = 1
+            # print(str(index ) + '/' + str(len(possibleArranges)))
             for index, word in enumerate(splittedSentence):
-                if word not in self.words[arrange[index].value[0]]:
-                    probabilityOfWord = 0.000000000000001
-                else:
-                    probabilityOfWord = self.words[arrange[index].value[0]][word]
+                currentLabel = arrange[index].value[0]
+                previousLabel = 'EMPTY' if index == 0 else arrange[index-1].value[0]
 
-                if arrange[index-1].value[0] not in self.bigrams or arrange[index].value[0] not in self.bigrams['EMPTY' if index == 0 else arrange[index-1].value[0]]:
-                    probabilityOfBigram = 0.000000000000001
+
+                # Verify dictionary for previous occurrencies
+                tupleForCurrentiteration = (previousLabel,currentLabel,word)
+                if tupleForCurrentiteration in viterbyDict:
+                    timesSaved += 1
+                    produtOfProbabilites *= viterbyDict[tupleForCurrentiteration]
+                    continue
+                totalTimes+=1
+
+
+                if word not in self.words[currentLabel]:
+                    probabilityOfWord = 0.001
                 else:
-                    probabilityOfBigram = self.bigrams['EMPTY' if index == 0 else arrange[index - 1].value[0]][
-                        arrange[index].value[0]]
+                    probabilityOfWord = self.words[currentLabel][word]
+
+                if previousLabel not in self.bigrams or currentLabel not in self.bigrams['EMPTY' if index == 0 else arrange[index-1].value[0]]:
+                    probabilityOfBigram = 0.000000000000001
+                    break
+                else:
+                    probabilityOfBigram = self.bigrams['EMPTY' if index == 0 else previousLabel][currentLabel]
+
+                viterbyDict[(previousLabel, currentLabel, word)] = probabilityOfWord * probabilityOfBigram
 
                 produtOfProbabilites *= probabilityOfWord * probabilityOfBigram
 
-                # if index == 0:
-                #     if word in self.words and arrange[index] in self.words[word] and 'EMPTY' in self.bigrams and arrange[index] in self.bigrams['EMPTY']:
-                #         produtOfProbabilites *= probabilityOfWord * probabilityOfBigram
-                # else:
-                #     if word in self.words and arrange[index] in self.words[word] and arrange[index-1] in self.bigrams and arrange[index] in self.bigrams[arrange[index-1]]:
-                #         produtOfProbabilites *= self.words[arrange[index]] *
-            #print(arrange)
-            #print(produtOfProbabilites)
             probabilityOfArrange.append(produtOfProbabilites)
 
 
         max = 0
         maxIndexes = []
 
-        print(probabilityOfArrange)
-        # print(self.words['V']['vou'])
-        # print(self.words['ADV']['ali'])
-        # print(self.bigrams['V']['ADV'])
-        # print(self.bigrams['EMPTY']['V'])
-        for index,probability in enumerate(probabilityOfArrange):
-            if probability != 1:
-                #print(probability)
-                if probabilityOfArrange[index] > max:
-                    max = probabilityOfArrange[index]
-                    maxIndexes = [index]
-                elif probabilityOfArrange[index] == max:
-                    print(probabilityOfArrange[index])
-                    maxIndexes.append(index)
+        print('Entered ' + str(timesSaved) + ' times in viterbidict')
+        print('Calculeted ' + str(totalTimes) + ' times the probability')
 
-        print(max)
-        return np.array(possibleArranges)[maxIndexes]
+        maxProbability = np.argmax(probabilityOfArrange)
+        return possibleArranges[maxProbability]
+
+        # for index,probability in enumerate(probabilityOfArrange):
+        #     if probability != 1:
+        #         #print(probability)
+        #         if probabilityOfArrange[index] > max:
+        #             max = probabilityOfArrange[index]
+        #             maxIndexes = [index]
+        #         elif probabilityOfArrange[index] == max:
+        #             maxIndexes.append(index)
+        #
+        # return np.array(possibleArranges)[maxIndexes]
 
     def possibleArranges(self, count: int):
         # Gets all combinations of labels with repetition
-        return list([p for p in itertools.product(self.possibleLabels, repeat=count)])
+        allPossible = list([p for p in itertools.product(self.possibleLabels, repeat=count)])
+        return allPossible
+
 
     def generatePossibleLabels(self):
         self.possibleLabels = list(set(map(Label, Label)))
