@@ -115,7 +115,9 @@ class HMM:
 
     def classify(self, sentence, numberOfArranges : int):
 
-        splittedSentence = str(sentence).lower().split(' ')
+        sentence = str(sentence).lower()
+        splittedSentence = sentence.replace('.', ' .').replace(',', ' ,').split(' ')
+
         possibleArranges = self.possibleArranges(len(splittedSentence))
         probabilityOfArrange = []
 
@@ -126,7 +128,7 @@ class HMM:
             #arrange[0].value[0] == 'ART' and arrange[1].value[0] == 'N' and arrange[2].value[0] == 'V'
             for index, word in enumerate(splittedSentence):
                 if word not in self.words[arrange[index].value[0]]:
-                    probabilityOfWord = 0
+                    probabilityOfWord = 0.000000000000001
                 else:
                     probabilityOfWord = self.words[arrange[index].value[0]][word]
 
@@ -152,15 +154,6 @@ class HMM:
         max = 0
         maxIndexes = []
 
-        print(self.words['N']['computador'])
-        print(self.words['N']['defeito'])
-        print(self.words['PREP']['com'])
-        print(self.words['ART']['o'])
-        print(self.words['V']['está'])
-        #print(self.words['PRO']['defeito'])
-        # print(self.words['ADV']['ali'])
-        # print(self.bigrams['V']['ADV'])
-        #print(self.bigrams['PREP']['N'])
         for index,probability in enumerate(probabilityOfArrange):
             if probability != 1:
                 #print(probability)
@@ -168,15 +161,15 @@ class HMM:
                     max = probabilityOfArrange[index]
                     maxIndexes = [index]
                 elif probabilityOfArrange[index] == max:
-                    print(probabilityOfArrange[index])
+                    #print(probabilityOfArrange[index])
                     maxIndexes.append(index)
 
-        print(max)
+        #print(max)
         return np.array(possibleArranges)[maxIndexes]
 
     def possibleArranges(self, count: int):
-        # Gets all combinations of labels
-        return list(itertools.product(self.possibleLabels, repeat= count))
+        # Gets all combinations of labels with repetition
+        return list([p for p in itertools.product(self.possibleLabels, repeat=count)])
 
     def generatePossibleLabels(self):
         self.possibleLabels = list(set(map(Label, Label)))
