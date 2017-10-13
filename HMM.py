@@ -120,7 +120,6 @@ class HMM:
         print('Started Classification Task')
 
 
-
         splittedSentence = sentence.replace('.', ' .').replace(',', ' ,').split(' ')
 
 
