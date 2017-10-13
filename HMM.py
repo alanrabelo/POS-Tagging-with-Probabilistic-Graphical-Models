@@ -120,10 +120,29 @@ class HMM:
         print('Started Classification Task')
 
 
-        splittedSentence = sentence.replace('.', ' .').replace(',', ' ,').split(' ')
+        splittedSentence = sentence.replace('.', ' .').replace(',', ' ,').lower().split(' ')
 
 
-        possibleArranges = self.possibleArranges(len(splittedSentence))
+        possibleLabelsBest = []
+
+        for word in splittedSentence:
+
+            labelsForWord = []
+
+            for label in self.possibleLabels:
+                if word in self.words[label.value[0]]:
+                    if self.words[label.value[0]][word] > 0:
+                        labelsForWord.append(label.value[0])
+
+            if len(labelsForWord) == 0:
+                possibleLabelsBest.append(self.generatePossibleLabelsAsString())
+            else:
+                possibleLabelsBest.append(labelsForWord)
+        print(possibleLabelsBest)
+
+
+
+        possibleArranges = self.possibleArrangesForArray(possibleLabelsBest)
         probabilityOfArrange = []
 
         viterbyDict = dict()
@@ -132,8 +151,10 @@ class HMM:
             produtOfProbabilites = 1
             # print(str(index ) + '/' + str(len(possibleArranges)))
             for index, word in enumerate(splittedSentence):
-                currentLabel = arrange[index].value[0]
-                previousLabel = 'EMPTY' if index == 0 else arrange[index-1].value[0]
+                if index >= len(arrange):
+                    continue
+                currentLabel = arrange[index]
+                previousLabel = 'EMPTY' if index == 0 else arrange[index-1]
 
                 # Verify dictionary for previous occurrencies
                 tupleForCurrentiteration = (previousLabel,currentLabel,word)
@@ -141,14 +162,12 @@ class HMM:
                     produtOfProbabilites *= viterbyDict[tupleForCurrentiteration]
                     continue
 
-
-
                 if word not in self.words[currentLabel]:
                     probabilityOfWord = 0.00000000000001
                 else:
                     probabilityOfWord = self.words[currentLabel][word]
 
-                if previousLabel not in self.bigrams or currentLabel not in self.bigrams['EMPTY' if index == 0 else arrange[index-1].value[0]]:
+                if previousLabel not in self.bigrams or currentLabel not in self.bigrams['EMPTY' if index == 0 else arrange[index-1]]:
                     probabilityOfBigram = 0.000000000000001
                 else:
                     probabilityOfBigram = self.bigrams['EMPTY' if index == 0 else previousLabel][currentLabel]
@@ -169,9 +188,23 @@ class HMM:
         allPossible = list([p for p in itertools.product(self.possibleLabels, repeat=count)])
         return allPossible
 
+    def possibleArrangesForArray(self,array : [str]):
+        # Gets all combinations of labels with repetition
+        allPossible = list(itertools.product(*array))
+        print('We must search in ' + str(len(allPossible)) + ' combinations')
+
+        return allPossible
+
 
     def generatePossibleLabels(self):
         self.possibleLabels = list(set(map(Label, Label)))
+
+    def generatePossibleLabelsAsString(self):
+
+        labels = []
+        for label in list(set(map(Label, Label))):
+            labels.append(label.value[0])
+        return labels
 
 
 
